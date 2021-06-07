@@ -4,7 +4,7 @@
  * Version: 1.0
  * Copyright © 2021 wzh
  * Released under the MIT license
- * https://github.com/wzh656/js-plus/blob/master/LICENSE.md
+ * https://github.com/wzh656/js-plus/blob/main/LICENSE
  */
 (function(){
 	/* String */
