@@ -139,7 +139,7 @@
 		
 		//Math.avg 求平均值
 		Math.avg = function(...num){
-			return Math.sum(...num) / num.filter(v => !isNaN(v)).length;
+			return Math.sum(...num) / (num.filter(v => !isNaN(v)).length || 1);
 		}
 		
 	}

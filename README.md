@@ -8,7 +8,7 @@ js+ 是一个js的拓展库，根据实践经验在原生js的基础上添加、
 
 + script标签引用：
     ```html
-    <script src="https://wzh656.github.io/js-plus/src/js_plus.min.js"></script>
+    <script src="https://wzh656.github.io/js-plus/src/js_plus.js"></script>
     ```
 + node.js require
     ```javascript
