@@ -126,7 +126,7 @@
 			if (num > max) return (num - min) % range + min;
 			if (num < min) return max - ( (max - num) % range || max); //保证不取max
 			return Math.round(num, step);
-		}
+		};
 		
 		//Math.sum 求和
 		Math.sum = function(...num){
@@ -135,13 +135,25 @@
 				if ( !isNaN(v) )
 					sum += v;
 			return sum;
-		}
+		};
 		
 		//Math.avg 求平均值
 		Math.avg = function(...num){
 			return Math.sum(...num) / (num.filter(v => !isNaN(v)).length || 1);
-		}
+		};
 		
+		const degToRad = Math.PI/180,
+			radToDeg = 180/Math.PI;
+		
+		// Math.rad 角度转弧度
+		Math.rad = function(deg){
+			return deg * degToRad;
+		};
+		
+		// Math.deg 弧度转角度
+		Math.deg = function(read){
+			return rad * radToDeg;
+		};
 	}
 	
 	
@@ -216,9 +228,19 @@
 			return Math.sum(...this);
 		}
 		
-		//Array.prototype.avg 求.平均数
+		//Array.prototype.avg 求平均数
 		Array.prototype.avg = function(){
 			return Math.avg(...this);
+		}
+		
+		//Array.prototype.min 求最小值
+		Array.prototype.min = function(){
+			return Math.min(...this);
+		}
+		
+		//Array.prototype.max 求最大值
+		Array.prototype.max = function(){
+			return Math.max(...this);
 		}
 		
 	}
@@ -229,7 +251,7 @@
 		
 		//Date.prototype.format 格式化日期
 		Date.prototype.format = function(fmt){
-			const o = {	 
+			const o = {
 				"M+": this.getMonth()+1,					//月份
 				"d+": this.getDate(),						//日
 				"h+": this.getHours(),						//小时
@@ -237,13 +259,13 @@
 				"s+": this.getSeconds(),					//秒
 				"q+": Math.floor((this.getMonth()+3)/3),	//季度
 				"S": this.getMilliseconds()					//毫秒
-			};	 
-			if ( /(y+)/.test(fmt) )	 
-				fmt = fmt.replace(RegExp.$1, (this.getFullYear()+"").substr(4 - RegExp.$1.length));	 
-			for (const k in o)	 
-				if ( new RegExp("("+ k +")").test(fmt) )
-					fmt = fmt.replace(RegExp.$1, (RegExp.$1.length==1) ? (o[k]) : (("00"+ o[k]).substr((""+ o[k]).length)));	 
-			return fmt;	 
+			};
+			if ( /(y+)/.test(fmt) )
+				fmt = fmt.replace(RegExp.$1, (this.getFullYear()+"").substr(4 - RegExp.$1.length));
+			for (const [i,v] of Object.entries(o))
+				if ( new RegExp("("+ i +")").test(fmt) )
+					fmt = fmt.replace(RegExp.$1, (RegExp.$1.length==1)? v: ("00"+ v).substr((""+ v).length));
+			return fmt;
 		};
 		
 	}
@@ -255,8 +277,8 @@
 		//location.getQueryString 获取url queryString
 		location.getQueryString = function(name){
 			var reg = new RegExp("(^|&)"+ name +"=([^&]*)(&|$)");
-			var r = window.location.search.substr(1).match(reg);
-			if(r!=null) return decodeURIComponent(r[2]); return null;
+			var r = location.search.substr(1).match(reg);
+			if(r!=null) return decodeURIComponent(r[2]);
 		};
 		
 	}
