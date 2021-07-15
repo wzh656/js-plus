@@ -74,7 +74,7 @@
 		Number.prototype.padding = function(start, end){
 			var part = String(this).split(".");
 			var symbol = "";
-			if (isNaN( Number(part[0].charAt(0)) )){
+			if (isNaN( +part[0].charAt(0) )){
 				symbol = part[0].charAt(0);
 				part[0] = part[0].slice(1);
 			}
@@ -116,16 +116,26 @@
 		Math.limitRange = function(num, min, max, step){
 			if (num <= min) return min;
 			if (num >= max) return max;
-			return Math.round(num, step);
+			return step? Math.round(num, step): num;
 		};
 		
 		//Math.modRange 限制范围（超出求余）
 		Math.modRange = function(num, min, max, step){
 			// 范围： [min ,max)
 			const range = max - min;
-			if (num > max) return (num - min) % range + min;
-			if (num < min) return max - ( (max - num) % range || max); //保证不取max
-			return Math.round(num, step);
+			if (num > max){
+				const ret = (num - min) % range + min;
+				return step? Math.round(ret, step): ret;
+			}
+			if (num < min){
+				const ret = max - (max - num) % range;
+				return step? Math.round(ret, step): ret;
+			}
+			if (num == max){ //保证不取max
+				const ret = min;
+				return step? Math.round(ret, step): ret;
+			}
+			return step? Math.round(num, step): num;
 		};
 		
 		//Math.sum 求和
@@ -252,19 +262,20 @@
 		//Date.prototype.format 格式化日期
 		Date.prototype.format = function(fmt){
 			const o = {
-				"M+": this.getMonth()+1,					//月份
+				"y+": this.getFullYear(),					//年
+				"M+": this.getMonth()+1,					//月
 				"d+": this.getDate(),						//日
-				"h+": this.getHours(),						//小时
+				"h+": this.getHours(),						//时
 				"m+": this.getMinutes(),					//分
 				"s+": this.getSeconds(),					//秒
 				"q+": Math.floor((this.getMonth()+3)/3),	//季度
 				"S": this.getMilliseconds()					//毫秒
 			};
-			if ( /(y+)/.test(fmt) )
-				fmt = fmt.replace(RegExp.$1, (this.getFullYear()+"").substr(4 - RegExp.$1.length));
+			/* if ( /(y+)/.test(fmt) )
+				fmt = fmt.replace(RegExp.$1, (this.getFullYear()+"").substr(4 - RegExp.$1.length)); */
 			for (const [i,v] of Object.entries(o))
 				if ( new RegExp("("+ i +")").test(fmt) )
-					fmt = fmt.replace(RegExp.$1, (RegExp.$1.length==1)? v: ("00"+ v).substr((""+ v).length));
+					fmt = fmt.replace(RegExp.$1, (v+"").padStart(RegExp.$1.length, "0")); //(RegExp.$1.length==1)? v: ("00"+ v).substr((""+ v).length)
 			return fmt;
 		};
 		
@@ -281,6 +292,15 @@
 			if(r!=null) return decodeURIComponent(r[2]);
 		};
 		
+	}
+
+
+	/* or 取有效默认值 */
+	window.OR = function(...values){
+		for (const v of values)
+			if (v !== undefined && v !== null)
+				return v;
+		return values[values.length-1];
 	}
 	
 })();
