@@ -253,6 +253,21 @@
 			return Math.max(...this);
 		}
 		
+		//Array.prototype.randomSelect 按概率随机选择
+		Array.prototype.randomSelect = function(probability){
+			if (probability){
+				const random = Math.random(0, probability.sum());
+				let num = 0;
+				for (let i=0; i<this.length; i++){
+					num += probability[i];
+					if (random < num)
+						return this[i];
+				}
+			}else{
+				return this[~~(Math.random() * this.length)];
+			}
+		}
+		
 	}
 	
 	
@@ -295,12 +310,19 @@
 	}
 
 
-	/* or 取有效默认值 */
+	/* OR 取有效默认值 */
 	window.OR = function(...values){
 		for (const v of values)
 			if (v !== undefined && v !== null)
 				return v;
 		return values[values.length-1];
-	}
+	};
+
+	/* NEAR 判断实数是否接近 */
+	window.NEAR = function(a, b, r=1e-8){
+		if (Math.abs(a-b) >= r) //超过范围
+			return false;
+		return true;
+	};
 	
 })();
