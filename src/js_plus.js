@@ -361,19 +361,18 @@
 
 	}
 	
-
+	
 	/* 全局对象 */
 	if (typeof gloalThis == "undefined"){
-
-		gloalThis = gloalThis ||
-			(typeof window !== "undefined"? window
+		
+		gloalThis = (typeof window !== "undefined"? window
 			: (typeof process === "object" &&
 				typeof require === "function" &&
 				typeof global === "object")? global
 			: this);
-
+		
 	}
-
+	
 	/* OR 取有效默认值 */
 	gloalThis.OR = function(...values){
 		for (const v of values)
@@ -381,7 +380,7 @@
 				return v;
 		return values[values.length-1];
 	};
-
+	
 	/* NEAR 判断实数是否接近 */
 	gloalThis.NEAR = function(a, b, r=1e-8){
 		if (Math.abs(a-b) >= r) //超过范围
