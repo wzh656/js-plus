@@ -311,56 +311,71 @@
 	
 	
 	/* URL */
-	//URL.image2base64 图片url 转 base64链接
-	URL.image2base64 = function(url, type="image/png"){
-		return new Promise((resolve, reject)=>{
-			const img = new Image();
-			img.onload = function(){
-				const canvas = document.createElement("canvas");
-				canvas.width = this.naturalWidth,
-				canvas.height = this.naturalHeight;
-				canvas.getContext("2d").drawImage(this, 0, 0); //将图片插入画布并开始绘制
-				resolve( canvas.toDataURL(type) );
-			};
-			img.onerror = reject; //图片加载失败的错误处理	
-			img.setAttribute("crossOrigin", "Anonymous"); //CORS 策略，会存在跨域问题https://stackoverflow.com/questions/20424279/canvas-todataurl-securityerror
-			img.src = url;
-		});
-	};
-	
-	//URL.blob2url blob 转 临时url链接
-	URL.blob2url = function(blob){
-		return URL.createObjectURL(blob);
-	};
-	
-	//URL.blob2base64 blob 转 base64
-	URL.blob2base64 = function(blob){
-		return new Promise((resolve, reject) => {
-			const fileReader = new FileReader();
-			fileReader.onload = (e)=>{
-				resolve( e.target.result );
-			};
-			fileReader.onerror = reject;
-			fileReader.readAsDataURL(blob); //readAsDataURL
-		});
-	};
-	
-	//URL.base64ToBlob base64 转 blob
-	URL.base64ToBlob = function(url){
-		let arr = url.split(','),
-			mime = arr[0].match(/:(.*?);/)[1], //mime类型
-			bstr = atob(arr[1]), //base64字符串
-			n = bstr.length,
-			u8arr = new Uint8Array(n);
-		while (n--)
-			u8arr[n] = bstr.charCodeAt(n);
-		return new Blob([u8arr], {type: mime});
-	};
+	if (typeof URL != "undefined"){
+
+		//URL.image2base64 图片url 转 base64链接
+		URL.image2base64 = function(url, type="image/png"){
+			return new Promise((resolve, reject)=>{
+				const img = new Image();
+				img.onload = function(){
+					const canvas = document.createElement("canvas");
+					canvas.width = this.naturalWidth,
+					canvas.height = this.naturalHeight;
+					canvas.getContext("2d").drawImage(this, 0, 0); //将图片插入画布并开始绘制
+					resolve( canvas.toDataURL(type) );
+				};
+				img.onerror = reject; //图片加载失败的错误处理	
+				img.setAttribute("crossOrigin", "Anonymous"); //CORS 策略，会存在跨域问题https://stackoverflow.com/questions/20424279/canvas-todataurl-securityerror
+				img.src = url;
+			});
+		};
+		
+		//URL.blob2url blob 转 临时url链接
+		URL.blob2url = function(blob){
+			return URL.createObjectURL(blob);
+		};
+		
+		//URL.blob2base64 blob 转 base64
+		URL.blob2base64 = function(blob){
+			return new Promise((resolve, reject) => {
+				const fileReader = new FileReader();
+				fileReader.onload = (e)=>{
+					resolve( e.target.result );
+				};
+				fileReader.onerror = reject;
+				fileReader.readAsDataURL(blob); //readAsDataURL
+			});
+		};
+		
+		//URL.base64ToBlob base64 转 blob
+		URL.base64ToBlob = function(url){
+			let arr = url.split(','),
+				mime = arr[0].match(/:(.*?);/)[1], //mime类型
+				bstr = atob(arr[1]), //base64字符串
+				n = bstr.length,
+				u8arr = new Uint8Array(n);
+			while (n--)
+				u8arr[n] = bstr.charCodeAt(n);
+			return new Blob([u8arr], {type: mime});
+		};
+
+	}
 	
 
+	/* 全局对象 */
+	if (typeof gloalThis == "undefined"){
+
+		gloalThis = gloalThis ||
+			(typeof window !== "undefined"? window
+			: (typeof process === "object" &&
+				typeof require === "function" &&
+				typeof global === "object")? global
+			: this);
+
+	}
 
 	/* OR 取有效默认值 */
-	window.OR = function(...values){
+	gloalThis.OR = function(...values){
 		for (const v of values)
 			if (v !== undefined && v !== null)
 				return v;
@@ -368,7 +383,7 @@
 	};
 
 	/* NEAR 判断实数是否接近 */
-	window.NEAR = function(a, b, r=1e-8){
+	gloalThis.NEAR = function(a, b, r=1e-8){
 		if (Math.abs(a-b) >= r) //超过范围
 			return false;
 		return true;
