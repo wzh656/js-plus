@@ -92,7 +92,15 @@
 	/* Math */
 	if (typeof Math != "undefined"){
 		
-		//Math.round 保留小数位数
+		//Math.floor 向下取整 保留小数位数
+		const floor = Math.floor;
+		Math.floor = function(num=0, accuracy){
+			if (accuracy !== undefined) //有范围
+				return floor(num * 10**accuracy) / 10**accuracy;
+			return floor(num);
+		};
+		
+		//Math.round 四舍五入 保留小数位数
 		const round = Math.round;
 		Math.round = function(num=0, accuracy){
 			if (accuracy !== undefined) //有范围
@@ -100,16 +108,29 @@
 			return round(num);
 		};
 		
+		//Math.ceil 向上取整 保留小数位数
+		const ceil = Math.ceil;
+		Math.ceil = function(num=0, accuracy){
+			if (accuracy !== undefined) //有范围
+				return ceil(num * 10**accuracy) / 10**accuracy;
+			return ceil(num);
+		};
+		
 		//Math.random 随机数范围
 		const random = Math.random;
 		Math.random = function(start=1, end, step){
 			if (end !== undefined){ //有end 双参数
 				if (step !== undefined) //有范围 三参数
-					return Math.round( random()*(end-start)+start, step );
+					return Math.floor( random()*(end-start)+start, step );
 				return random() * (end - start) + start;
 			};
 			//start => end 单参数
 			return random() * start;
+		};
+		
+		//Math.randomError 随机误差
+		Math.randomError = function(r=0.1){
+			return Math.random(1-r, 1+r);
 		};
 		
 		//Math.limitRange 限制范围（超出直接返回）
@@ -161,7 +182,7 @@
 		};
 		
 		// Math.deg 弧度转角度
-		Math.deg = function(read){
+		Math.deg = function(rad){
 			return rad * radToDeg;
 		};
 	}
@@ -215,6 +236,45 @@
 	
 	/* Array */
 	if (typeof Array != "undefined"){
+		
+		//Array.new 生成任意维数组
+		Array.new = function(value, len, ...num){
+			if (num.length == 0){ //递归结束
+				if (value instanceof Function){ //函数
+					if (typeof len == "object"){ //长度为数组
+						const arr = [];
+						for (const i of Array.range(...len))
+							arr[i] = value();
+						return arr;
+					}else{
+						return Array.from({ //长度为值
+							length: len
+						}, value);
+					}
+					
+				}else{ //数值
+					if (typeof len == "object"){ //长度为数组
+						const arr = [];
+						for (const i of Array.range(...len))
+							arr[i] = value;
+						return arr;
+					}else{
+						return new Array(len).fill(value);
+					}
+					
+				}
+				
+			}else{ //下一轮递归
+				if (typeof len == "object"){ //长度为数组
+					const arr = [];
+					for (const i of Array.range(...len))
+						arr[i] = Array.new(value, ...num);
+					return arr;
+				}else{
+					return new Array(len).fill( Array.new(value, ...num) );
+				}
+			}
+		};
 		
 		//Array.range 生成范围数组[start, end)
 		Array.range = function(start, end, step=1){
@@ -335,7 +395,7 @@
 			return URL.createObjectURL(blob);
 		};
 		
-		//URL.blob2base64 blob 转 base64
+		//URL.blob2base64 blob 转 base64链接
 		URL.blob2base64 = function(blob){
 			return new Promise((resolve, reject) => {
 				const fileReader = new FileReader();
@@ -347,7 +407,7 @@
 			});
 		};
 		
-		//URL.base64ToBlob base64 转 blob
+		//URL.base64ToBlob base64链接 转 blob
 		URL.base64ToBlob = function(url){
 			let arr = url.split(','),
 				mime = arr[0].match(/:(.*?);/)[1], //mime类型
