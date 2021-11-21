@@ -418,7 +418,32 @@
 				u8arr[n] = bstr.charCodeAt(n);
 			return new Blob([u8arr], {type: mime});
 		};
-
+		
+	}
+	
+	
+	/* navigator */
+	if (typeof navigator != "undefined"){
+		
+		//navigator.device 判断手机电脑
+		if (/ipad|iphone|midp|rv:1.2.3.4|ucweb|android|windows ce|windows mobile/.test(
+				navigator.userAgent.toLowerCase()
+			)
+		){ //手机(-)
+			if ( navigator.userAgent.toLowerCase().indexOf("html5plus") != -1 ){ //html5+
+				navigator.device = -2;
+			}else{ //浏览器
+				navigator.device = -1;
+			}
+			
+		}else{ //电脑(+)
+			if (typeof require != "undefined"){ //electron
+				navigator.device = +2;
+			}else{ //浏览器
+				navigator.device = +1;
+			}
+		}
+		
 	}
 	
 	
