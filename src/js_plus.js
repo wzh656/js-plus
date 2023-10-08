@@ -63,6 +63,11 @@
 			}
 			return str;
 		};
+
+		//String.include 是否包括某字符串
+		String.prototype.include = function(str){
+			return this.indexOf(str) != -1;
+		}
 		
 	}
 	
@@ -327,7 +332,11 @@
 				return this[~~(Math.random() * this.length)];
 			}
 		}
-		
+
+		//Array.include 是否包括某项
+		Array.prototype.include = function(item){
+			return this.indexOf(item) != -1;
+		}
 	}
 	
 	
