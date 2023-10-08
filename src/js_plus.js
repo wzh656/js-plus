@@ -264,7 +264,9 @@
 							arr[i] = value;
 						return arr;
 					}else{
-						return new Array(len).fill(value);
+						return Array.from({
+							length: len
+						}, ()=>value);
 					}
 					
 				}
