@@ -458,6 +458,23 @@
 	}
 	
 	
+	/* navigator */
+	if (typeof console != "undefined"){
+		
+		const time = console.time;
+		console.time = function(name, callback){
+			if (callback){
+				time(name);
+				callback();
+				console.timeEnd(name);
+			}else{
+				time(name);
+			}
+		};
+		
+	}
+	
+	
 	/* 全局对象 */
 	if (typeof gloalThis == "undefined"){
 		
