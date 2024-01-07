@@ -1,8 +1,8 @@
 /*!
  * js_plus.js
  * https://github.com/wzh656/js-plus/
- * Version: 1.0
- * Copyright © 2021 wzh
+ * Version: 2.0
+ * Copyright © 2021~2024 wzh
  * Released under the MIT license
  * https://github.com/wzh656/js-plus/blob/main/LICENSE
  */
@@ -28,7 +28,7 @@
 		};
 		
 		//String.prototype.padStart 后补位
-		if (!String.prototype.padEnd) {
+		if (!String.prototype.padEnd){
 			String.prototype.padEnd = function(targetLength, padString){
 				targetLength = targetLength >> 0; //floor if number or convert non-number to 0;
 				padString = String( typeof padString !== "undefined" ? padString: "" );
@@ -77,8 +77,8 @@
 		
 		//Number.prototype.padding 小数点前后补位
 		Number.prototype.padding = function(start, end){
-			var part = String(this).split(".");
-			var symbol = "";
+			const part = String(this).split(".");
+			let symbol = "";
 			if (isNaN( +part[0].charAt(0) )){
 				symbol = part[0].charAt(0);
 				part[0] = part[0].slice(1);
@@ -134,9 +134,18 @@
 		};
 		
 		//Math.randomError 随机误差
-		Math.randomError = function(r=0.1){
-			return Math.random(1-r, 1+r);
+		Math.randomError = function(range=0.1, center=0){
+			return Math.random(center-range, center+range);
 		};
+
+		//Math.randomND 正态分布取样
+		Math.randomND = function(mean=0, stdev=1) {
+			const u1 = 1 - Math.random(); //uniform(0,1] random doubles
+			const u2 = 1 - Math.random();
+			const z1 = Math.sqrt(-2.0 * Math.log(u1)) * Math.cos(2.0 * Math.PI * u2); //random normal(0,1)
+			const z2 = Math.sqrt(-2.0 * Math.log(u1)) * Math.sin(2.0 * Math.PI * u2);
+			return z1 * stdev + mean;
+		}
 		
 		//Math.limitRange 限制范围（超出直接返回）
 		Math.limitRange = function(num, min, max, step){
@@ -149,16 +158,11 @@
 		Math.modRange = function(num, min, max, step){
 			// 范围： [min ,max)
 			const range = max - min;
-			if (num > max){
+			if (num >= max){
 				const ret = (num - min) % range + min;
 				return step? Math.round(ret, step): ret;
-			}
-			if (num < min){
+			}else if (num < min){
 				const ret = max - (max - num) % range;
-				return step? Math.round(ret, step): ret;
-			}
-			if (num == max){ //保证不取max
-				const ret = min;
 				return step? Math.round(ret, step): ret;
 			}
 			return step? Math.round(num, step): num;
@@ -180,14 +184,14 @@
 		
 		const degToRad = Math.PI/180,
 			radToDeg = 180/Math.PI;
-		
-		// Math.rad 角度转弧度
-		Math.rad = function(deg){
+
+		// Math.toRad 角度转弧度
+		Math.toRad = function(deg){
 			return deg * degToRad;
 		};
 		
-		// Math.deg 弧度转角度
-		Math.deg = function(rad){
+		// Math.toDeg 弧度转角度
+		Math.toDeg = function(rad){
 			return rad * radToDeg;
 		};
 	}
@@ -319,13 +323,18 @@
 		Array.prototype.max = function(){
 			return Math.max(...this);
 		}
+
+		//Array.include 是否包括某项
+		Array.prototype.include = function(item){
+			return this.indexOf(item) != -1;
+		}
 		
 		//Array.prototype.randomSelect 按概率随机选择
 		Array.prototype.randomSelect = function(probability){
 			if (probability){
 				const random = Math.random(0, probability.sum());
 				let num = 0;
-				for (let i=0; i<this.length; i++){
+				for (let i=0; i<this.length; ++i){
 					num += probability[i];
 					if (random < num)
 						return this[i];
@@ -335,9 +344,15 @@
 			}
 		}
 
-		//Array.include 是否包括某项
-		Array.prototype.include = function(item){
-			return this.indexOf(item) != -1;
+		//Array.prototype.shuffle 打乱数组
+		Array.prototype.shuffle = function(){
+			for (let i=0; i<this.length; ++i){
+				const iRand = ~~Math.random(this.length);
+				const temp = this[i];
+				this[i] = this[iRand];
+				this[iRand] = temp;
+			}
+			return this;
 		}
 	}
 	
@@ -420,12 +435,12 @@
 		
 		//URL.base64ToBlob base64链接 转 blob
 		URL.base64ToBlob = function(url){
-			let arr = url.split(','),
+			let arr = url.split(","),
 				mime = arr[0].match(/:(.*?);/)[1], //mime类型
 				bstr = atob(arr[1]), //base64字符串
 				n = bstr.length,
 				u8arr = new Uint8Array(n);
-			while (n--)
+			while (--n)
 				u8arr[n] = bstr.charCodeAt(n);
 			return new Blob([u8arr], {type: mime});
 		};
@@ -458,14 +473,15 @@
 	}
 	
 	
-	/* navigator */
+	/* console */
 	if (typeof console != "undefined"){
 		
+		//console.time 函数计时
 		const time = console.time;
-		console.time = function(name, callback){
-			if (callback){
+		console.time = function(name, func){
+			if (func){
 				time(name);
-				callback();
+				func();
 				console.timeEnd(name);
 			}else{
 				time(name);
