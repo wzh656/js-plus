@@ -43,7 +43,7 @@ js+ 是一个js的拓展库，根据实践经验在原生js的基础上添加、
 	    函数重写：生成范围在`[start, end)`内，步长为`10^(-step)`的随机数
 	+ `<Number> Math.randomError(<Number>range=0.1, <Number>center=0)`  
 	    随机误差：生成范围在`center-range`到`center+range`内的随机数
-	+ `<Number> Math.randomND(<Number>mean=0, <Number>stdev=1)`
+	+ `<Number> Math.randomND(<Number>mean=0, <Number>stdev=1)`  
 	    随机取样：生成均值为`mean`，标准差为`stdev`的随机正态取样
 	+ `<Number> Math.limitRange(<Number>num, <Number>min, <Number>max, <Number>step)`  
 	    范围限制：将`num`限制在`[min, max)`内，步长为`10^(-step)`（大于取`max`，小于取`min`）
@@ -122,6 +122,8 @@ js+ 是一个js的拓展库，根据实践经验在原生js的基础上添加、
 	+ `<Object> gloalThis`  
 		表示当前的全局对象（ES6+）：浏览器环境返回`Window`，`node.js`环境返回`global`，否则返回`this`
 	+ `<Any> OR(...<Any>values)`  
-		取有效默认值：在`values`中找到第一个有效真值（除`undefined`和`null`外的值），用于代替`||`运算符，相当于使用`??`运算符
+		取有效默认值：在`values`中找到第一个有效真值（除`undefined`和`null`外的值），用于代替`||`运算符，相当于使用`??`运算符（ES6+）
+	+ `<Any> ATTR(<Object>obj, ...<String>attrNames)`
+		取有效属性：返回`obj[attrName1][attrName2]...`，若不存在则返回`undefined`,相当于使用`?.`运算符（ES6+）
 	+ `<Bool> NEAR(<Number>a, <Number>b, <Number>r=1e-8)`  
 		判断实数是否接近：比较`a`和`b`的大小是否超过精度`r` （常用于比较实数/小数是否相等）

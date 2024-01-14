@@ -510,6 +510,17 @@
 		return values[values.length-1];
 	};
 	
+	/* ATTR 取有效属性 */
+	gloalThis.ATTR = function(obj, ...attrNames){
+		let current = obj;
+		for (const name of attrNames){
+			current = current[name];
+			if (current == undefined || current == null)
+				return current;
+		}
+		return current;
+	};
+	
 	/* NEAR 判断实数是否接近 */
 	gloalThis.NEAR = function(a, b, r=1e-8){
 		if (Math.abs(a-b) >= r) //超过范围
